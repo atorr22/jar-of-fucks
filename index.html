@@ -5,78 +5,243 @@
   <title>Virtual Jar of Fucks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      --bg: #020617;
+      --bg-soft: #020617;
+      --card: #020617;
+      --accent: #f97316;
+      --accent-soft: rgba(249, 115, 22, 0.18);
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --danger: #fca5a5;
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --radius-xl: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0b1120;
-      color: #e5e7eb;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: var(--text);
+      padding: 20px 12px;
     }
-    .card {
-      background: #020617;
-      border-radius: 16px;
-      padding: 24px 20px;
-      max-width: 420px;
+
+    .frame {
+      max-width: 460px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.3);
     }
-    h1 {
-      margin: 0 0 8px;
+
+    .card {
+      background: radial-gradient(circle at 0 0, #020617, #020617 35%, #020617 100%);
+      border-radius: var(--radius-xl);
+      padding: 22px 20px 18px;
+      border: 1px solid var(--border-subtle);
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      background:
+        radial-gradient(circle at 0 0, rgba(249, 115, 22, 0.16), transparent 55%),
+        radial-gradient(circle at 100% 0, rgba(96, 165, 250, 0.18), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .title-block h1 {
+      margin: 0 0 6px;
       font-size: 1.6rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    h1 span.jar-icon {
+
+    .jar-emoji {
       font-size: 1.8rem;
+      filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.9));
     }
+
     .subtitle {
-      margin: 0 0 20px;
+      margin: 0;
       font-size: 0.9rem;
-      color: #9ca3af;
+      color: var(--muted);
     }
-    .count {
-      text-align: center;
-      margin-bottom: 16px;
+
+    .pill {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+      white-space: nowrap;
     }
-    .count-label {
-      font-size: 0.8rem;
+
+    .main {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .jar {
+      width: 110px;
+      height: 150px;
+      border-radius: 48px;
+      border: 3px solid rgba(148, 163, 184, 0.85);
+      position: relative;
+      background:
+        radial-gradient(circle at 20% 0, rgba(255, 255, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 80% 0, rgba(148, 163, 184, 0.35), transparent 60%);
+      overflow: hidden;
+    }
+
+    .jar-lid {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 76px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #4b5563, #9ca3af);
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.7),
+        inset 0 0 0 1px rgba(15, 23, 42, 0.6);
+    }
+
+    .jar-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 0%;
+      background: linear-gradient(to top, #f97316, #fed7aa);
+      transition: height 0.25s ease-out;
+    }
+
+    .jar-reflection {
+      position: absolute;
+      inset: 12px;
+      border-radius: 40px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.9),
+        inset 12px 0 18px rgba(15, 23, 42, 0.96);
+      pointer-events: none;
+    }
+
+    .stats {
+      padding-left: 4px;
+    }
+
+    .label {
+      font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      color: #9ca3af;
-      margin-bottom: 4px;
+      color: var(--muted);
+      margin-bottom: 3px;
     }
+
+    .count-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
     .count-value {
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 700;
       line-height: 1;
     }
+
     .count-unit {
       font-size: 0.9rem;
-      color: #9ca3af;
+      color: var(--muted);
     }
+
     .status {
-      text-align: center;
+      margin-top: 6px;
       font-size: 0.9rem;
-      color: #9ca3af;
+      color: var(--muted);
       min-height: 1.4em;
-      margin-bottom: 18px;
     }
+
     .status.empty {
-      color: #fca5a5;
+      color: var(--danger);
       font-weight: 500;
     }
+
+    .bar-wrap {
+      margin-top: 10px;
+    }
+
+    .bar-bg {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 100%;
+      border-radius: 999px;
+      background: linear-gradient(to right, #f97316, #facc15);
+      transform-origin: left center;
+      transform: scaleX(1);
+      transition: transform 0.25s ease-out;
+    }
+
+    .bar-caption {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
     .buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
-      margin-bottom: 12px;
+      margin-top: 18px;
+      margin-bottom: 6px;
     }
+
     button {
       border-radius: 999px;
       border: none;
@@ -86,73 +251,176 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #111827;
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      transition: transform 0.07s ease, box-shadow 0.07s ease, background 0.15s ease;
+      background: #0b1120;
+      color: var(--text);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      transition:
+        transform 0.07s ease,
+        box-shadow 0.07s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
       white-space: nowrap;
     }
+
+    button:hover {
+      background: #020617;
+      border-color: #e5e7eb;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.9);
+    }
+
     button:active {
       transform: translateY(1px) scale(0.99);
       box-shadow: none;
     }
+
     .primary {
-      background: #f97316;
+      background: radial-gradient(circle at 0 0, #fed7aa, #f97316);
       color: #111827;
       border-color: #f97316;
       font-weight: 600;
-      box-shadow: 0 8px 18px rgba(249, 115, 22, 0.4);
+      box-shadow: 0 10px 22px rgba(249, 115, 22, 0.45);
     }
+
+    .primary:hover {
+      background: radial-gradient(circle at 0 0, #ffedd5, #f97316);
+    }
+
     .primary:disabled {
-      opacity: 0.4;
+      opacity: 0.45;
       cursor: not-allowed;
       box-shadow: none;
     }
-    .note {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      text-align: center;
-      margin-top: 10px;
-      opacity: 0.9;
+
+    .subtle {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
     }
-    @media (max-width: 480px) {
+
+    .subtle:hover {
+      color: var(--text);
+    }
+
+    .accent {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(249, 115, 22, 0.7);
+    }
+
+    .accent:hover {
+      background: rgba(249, 115, 22, 0.24);
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .note-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 520px) {
       .card {
-        margin: 0 12px;
-        padding: 20px 16px;
+        padding: 20px 16px 16px;
       }
-      .count-value {
-        font-size: 2.4rem;
+
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .stats {
+        padding-left: 0;
+      }
+
+      .status {
+        text-align: center;
+      }
+
+      .bar-caption {
+        text-align: center;
       }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>
-      <span class="jar-icon">🫙</span>
-      Jar of Fucks
-    </h1>
-    <p class="subtitle">
-      A tiny, mildly offensive way to track how many fucks you’ve got left today.
-    </p>
+  <div class="frame">
+    <div class="card">
+      <div class="card-inner">
+        <div class="header-row">
+          <div class="title-block">
+            <h1>
+              <span class="jar-emoji">🫙</span>
+              Jar of Fucks
+            </h1>
+            <p class="subtitle">
+              A darkly honest way to track how much emotional energy you actually have for
+              people, problems and bullshit today.
+            </p>
+          </div>
+          <div class="pill">Emotional capacity tracker</div>
+        </div>
 
-    <div class="count">
-      <div class="count-label">Remaining</div>
-      <div class="count-value" id="countValue">–</div>
-      <div class="count-unit" id="countUnit">fucks</div>
+        <div class="main">
+          <div class="jar">
+            <div class="jar-lid"></div>
+            <div class="jar-fill" id="jarFill"></div>
+            <div class="jar-reflection"></div>
+          </div>
+
+          <div class="stats">
+            <div class="label">Remaining fucks</div>
+            <div class="count-row">
+              <div class="count-value" id="countValue">–</div>
+              <div class="count-unit" id="countUnit">fucks</div>
+            </div>
+            <div class="status" id="statusText"></div>
+
+            <div class="bar-wrap">
+              <div class="bar-bg">
+                <div class="bar-fill" id="barFill"></div>
+              </div>
+              <div class="bar-caption" id="barCaption">
+                This is how much of yourself you have left to hand out.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="giveBtn">✋ Give a fuck</button>
+          <button class="accent" id="randomBtn">🎲 Do I care?</button>
+          <button class="subtle" id="resetBtn">♻ Refill jar</button>
+        </div>
+
+        <div class="note">
+          <div class="note-dot"></div>
+          <div>
+            Nothing is stored on a server. This is just a private little dashboard
+            for your own boundaries, not therapy or advice.
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="status" id="statusText"></div>
-
-    <div class="buttons">
-      <button class="primary" id="giveBtn">✋ Give a fuck</button>
-      <button id="resetBtn">♻ Refill jar</button>
-      <button id="randomBtn">🎲 Do I care?</button>
-    </div>
-
-    <p class="note">
-      Stored locally in your browser. Nobody else can see your fuck balance.
-    </p>
   </div>
 
   <script>
@@ -163,6 +431,10 @@
     const countEl = document.getElementById("countValue");
     const unitEl = document.getElementById("countUnit");
     const statusEl = document.getElementById("statusText");
+    const barFillEl = document.getElementById("barFill");
+    const barCaptionEl = document.getElementById("barCaption");
+    const jarFillEl = document.getElementById("jarFill");
+
     const giveBtn = document.getElementById("giveBtn");
     const resetBtn = document.getElementById("resetBtn");
     const randomBtn = document.getElementById("randomBtn");
@@ -177,76 +449,90 @@
           if (!isNaN(num)) remaining = num;
         }
       } catch (e) {
-        // ignore, just don’t crash
+        // ignore
       }
     }
 
     function save() {
       try {
         localStorage.setItem(STORAGE_KEY, String(remaining));
-      } catch (e) {}
+      } catch (e) {
+        // ignore
+      }
     }
 
     function updateUI(messageOverride) {
+      const pct = Math.max(0, Math.min(1, remaining / STARTING_FUCKS));
+
       countEl.textContent = remaining;
       unitEl.textContent = remaining === 1 ? "fuck" : "fucks";
 
+      jarFillEl.style.height = pct * 100 + "%";
+      barFillEl.style.transform = "scaleX(" + pct + ")";
+
       let msg = "";
+      let caption = "";
       let isEmpty = false;
 
       if (remaining <= 0) {
-        msg = "You are completely out of fucks. Nothing is your problem now.";
+        msg = "You are officially out of fucks. You owe no explanations.";
+        caption = "At this point the answer to almost everything is no.";
         isEmpty = true;
         giveBtn.disabled = true;
       } else if (remaining <= 3) {
-        msg = "You’re running low on fucks. Choose wisely.";
+        msg = "You’re running low. Maybe this does not deserve a fuck.";
+        caption = "You are in conservation mode. Default to protecting your energy.";
         giveBtn.disabled = false;
       } else {
-        msg = "You still have fucks to give. Use them intentionally.";
+        msg = "You still have some capacity. Spend your fucks with intention.";
+        caption = "Every yes still costs you something. Make it worth a fuck.";
         giveBtn.disabled = false;
       }
 
-      if (messageOverride) msg = messageOverride;
+      if (messageOverride) {
+        msg = messageOverride;
+      }
 
       statusEl.textContent = msg;
       statusEl.className = "status" + (isEmpty ? " empty" : "");
+      barCaptionEl.textContent = caption;
     }
 
     function giveAFuck() {
       if (remaining <= 0) return;
       remaining -= 1;
       save();
-      updateUI("You just gave one fuck.");
+      updateUI("You just spent one fuck on this. Hope it was worth it.");
     }
 
     function resetJar() {
       remaining = STARTING_FUCKS;
       save();
-      updateUI("Fresh jar. Fucks fully restocked.");
+      updateUI("Fresh jar, new day. You do not have to spend all of these.");
     }
 
     function randomCare() {
       const options = [
-        "Absolutely not.",
-        "Not even a little.",
-        "Okay, fine. One fuck.",
-        "Ask me again after coffee.",
-        "Emotionally, I’m on airplane mode."
+        "Absolutely not. This is above your current fuck pay grade.",
+        "Not today. Your nervous system voted no.",
+        "Okay, fine, one fuck. That is all it gets.",
+        "Ask again after coffee and a snack.",
+        "Emotionally you are on airplane mode."
       ];
       const choice = options[Math.floor(Math.random() * options.length)];
-      if (choice.includes("One fuck") && remaining > 0) {
+
+      if (choice.includes("one fuck") && remaining > 0) {
         remaining -= 1;
         save();
       }
+
       updateUI(choice);
     }
 
-    // Wire up buttons
     giveBtn.addEventListener("click", giveAFuck);
     resetBtn.addEventListener("click", resetJar);
     randomBtn.addEventListener("click", randomCare);
 
-    // Initialize
     load();
     updateUI();
   </script>
