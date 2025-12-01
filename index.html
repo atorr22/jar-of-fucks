@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Virtual Jar of Fucks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1120;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 24px 20px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h1 span.jar-icon {
+      font-size: 1.8rem;
+    }
+    .subtitle {
+      margin: 0 0 20px;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+    .count {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .count-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .count-value {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .count-unit {
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+    .status {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #9ca3af;
+      min-height: 1.4em;
+      margin-bottom: 18px;
+    }
+    .status.empty {
+      color: #fca5a5;
+      font-weight: 500;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      transition: transform 0.07s ease, box-shadow 0.07s ease, background 0.15s ease;
+      white-space: nowrap;
+    }
+    button:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: none;
+    }
+    .primary {
+      background: #f97316;
+      color: #111827;
+      border-color: #f97316;
+      font-weight: 600;
+      box-shadow: 0 8px 18px rgba(249, 115, 22, 0.4);
+    }
+    .primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .note {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+    @media (max-width: 480px) {
+      .card {
+        margin: 0 12px;
+        padding: 20px 16px;
+      }
+      .count-value {
+        font-size: 2.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>
+      <span class="jar-icon">🫙</span>
+      Jar of Fucks
+    </h1>
+    <p class="subtitle">
+      A tiny, mildly offensive way to track how many fucks you’ve got left today.
+    </p>
+
+    <div class="count">
+      <div class="count-label">Remaining</div>
+      <div class="count-value" id="countValue">–</div>
+      <div class="count-unit" id="countUnit">fucks</div>
+    </div>
+
+    <div class="status" id="statusText"></div>
+
+    <div class="buttons">
+      <button class="primary" id="giveBtn">✋ Give a fuck</button>
+      <button id="resetBtn">♻ Refill jar</button>
+      <button id="randomBtn">🎲 Do I care?</button>
+    </div>
+
+    <p class="note">
+      Stored locally in your browser. Nobody else can see your fuck balance.
+    </p>
+  </div>
+
+  <script>
+    // Config: how many fucks you start with
+    const STARTING_FUCKS = 10;
+    const STORAGE_KEY = "virtualJarOfFucks:v1";
+
+    const countEl = document.getElementById("countValue");
+    const unitEl = document.getElementById("countUnit");
+    const statusEl = document.getElementById("statusText");
+    const giveBtn = document.getElementById("giveBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const randomBtn = document.getElementById("randomBtn");
+
+    let remaining = STARTING_FUCKS;
+
+    function load() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved !== null) {
+          const num = parseInt(saved, 10);
+          if (!isNaN(num)) remaining = num;
+        }
+      } catch (e) {
+        // ignore, just don’t crash
+      }
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(STORAGE_KEY, String(remaining));
+      } catch (e) {}
+    }
+
+    function updateUI(messageOverride) {
+      countEl.textContent = remaining;
+      unitEl.textContent = remaining === 1 ? "fuck" : "fucks";
+
+      let msg = "";
+      let isEmpty = false;
+
+      if (remaining <= 0) {
+        msg = "You are completely out of fucks. Nothing is your problem now.";
+        isEmpty = true;
+        giveBtn.disabled = true;
+      } else if (remaining <= 3) {
+        msg = "You’re running low on fucks. Choose wisely.";
+        giveBtn.disabled = false;
+      } else {
+        msg = "You still have fucks to give. Use them intentionally.";
+        giveBtn.disabled = false;
+      }
+
+      if (messageOverride) msg = messageOverride;
+
+      statusEl.textContent = msg;
+      statusEl.className = "status" + (isEmpty ? " empty" : "");
+    }
+
+    function giveAFuck() {
+      if (remaining <= 0) return;
+      remaining -= 1;
+      save();
+      updateUI("You just gave one fuck.");
+    }
+
+    function resetJar() {
+      remaining = STARTING_FUCKS;
+      save();
+      updateUI("Fresh jar. Fucks fully restocked.");
+    }
+
+    function randomCare() {
+      const options = [
+        "Absolutely not.",
+        "Not even a little.",
+        "Okay, fine. One fuck.",
+        "Ask me again after coffee.",
+        "Emotionally, I’m on airplane mode."
+      ];
+      const choice = options[Math.floor(Math.random() * options.length)];
+      if (choice.includes("One fuck") && remaining > 0) {
+        remaining -= 1;
+        save();
+      }
+      updateUI(choice);
+    }
+
+    // Wire up buttons
+    giveBtn.addEventListener("click", giveAFuck);
+    resetBtn.addEventListener("click", resetJar);
+    randomBtn.addEventListener("click", randomCare);
+
+    // Initialize
+    load();
+    updateUI();
+  </script>
+</body>
+</html>
